@@ -7,6 +7,8 @@ import 'package:meal_category_app_flutter/screens/categories.dart';
 import 'package:meal_category_app_flutter/screens/meals.dart';
 import 'package:meal_category_app_flutter/screens/tabs.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 final theme = ThemeData(
   useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(
@@ -17,7 +19,11 @@ final theme = ThemeData(
 );
 
 void main() {
-  runApp(const App());
+  runApp(
+    const ProviderScope(
+      child: App(),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
