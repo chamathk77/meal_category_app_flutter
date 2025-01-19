@@ -3,6 +3,7 @@ import 'package:meal_category_app_flutter/models/meal.dart';
 // import 'package:meal_category_app_flutter/providers/meals_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meal_category_app_flutter/providers/favourite_provider.dart';
+import 'package:meal_category_app_flutter/providers/filter_provider.dart';
 
 class MealDetailsScreen extends ConsumerWidget {
   const MealDetailsScreen({
@@ -16,25 +17,30 @@ class MealDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final favouriteMeals = ref.watch(filteredMealsProvider);
+    final isFavorite = favouriteMeals.contains(meal);
     return Scaffold(
         appBar: AppBar(title: Text(meal.title), actions: [
           IconButton(
-            onPressed: () {
-              final isExisting = ref
-                  .read(favoriteMealsProvider.notifier)
-                  .toggleMealFavoriteStatus(meal);
+              onPressed: () {
+                final isExisting = ref
+                    .read(favoriteMealsProvider.notifier)
+                    .toggleMealFavoriteStatus(meal);
 
-              ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(isExisting
-                      ? 'Meal removed from favorites!'
-                      : 'Meal added to favorites!'),
-                ),
-              );
-            },
-            icon: const Icon(Icons.star),
-          )
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isExisting
+                          ? 'Meal added to favorites!'
+                          : 'Meal removed from favorites!',
+                    ),
+                  ),
+                );
+              },
+              icon: isFavorite
+                  ? const Icon(Icons.star)
+                  : const Icon(Icons.star_border))
         ]),
         body: SingleChildScrollView(
             padding: const EdgeInsets.all(25),

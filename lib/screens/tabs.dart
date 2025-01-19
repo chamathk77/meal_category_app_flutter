@@ -10,6 +10,8 @@ import 'package:meal_category_app_flutter/providers/meals_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meal_category_app_flutter/providers/favourite_provider.dart';
 
+import 'package:meal_category_app_flutter/providers/filter_provider.dart';
+
 const kInitialFilters = {
   Filter.glutenFree: false,
   Filter.lactoseFree: false,
@@ -27,23 +29,6 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _selectedPageIndex = 0;
-  // final List<Meal> favoriteMeals = [];
-  Map<Filter, bool> _Selectedfilters = kInitialFilters;
-
-  // void _toggleMealFavoriteStatus(Meal meal) {
-  //   final isExisting = favoriteMeals.contains(meal);
-  //   if (isExisting) {
-  //     _showInfoMessage('Meal is no longer a favorite.');
-  //     setState(() {
-  //       favoriteMeals.remove(meal);
-  //     });
-  //   } else {
-  //     setState(() {
-  //       favoriteMeals.add(meal);
-  //     });
-  //     _showInfoMessage('Marked as favorite.');
-  //   }
-  // }
 
   void _selectPage(int index) {
     setState(() {
@@ -54,21 +39,8 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     final meals = ref.watch(mealsProvider);
-    final availbleMeals = meals.where((meal) {
-      if (_Selectedfilters[Filter.glutenFree]! && !meal.isGlutenFree) {
-        return false;
-      }
-      if (_Selectedfilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
-        return false;
-      }
-      if (_Selectedfilters[Filter.vegetarian]! && !meal.isVegetarian) {
-        return false;
-      }
-      if (_Selectedfilters[Filter.vegan]! && !meal.isVegan) {
-        return false;
-      }
-      return true;
-    }).toList();
+    final activeFilters = ref.watch(filtersProvider);
+    final availbleMeals = ref.watch(filteredMealsProvider);
 
     Widget activePage = CategoriesScreen(
       // onToggleFavorite: _toggleMealFavoriteStatus,
@@ -89,17 +61,11 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
     void _setScreen(String identifier) async {
       Navigator.of(context).pop();
       if (identifier == 'filters') {
-        final result = await Navigator.of(context).push<Map<Filter, bool>>(
+        await Navigator.of(context).push<Map<Filter, bool>>(
           MaterialPageRoute(
-            builder: (ctx) => FiltersScreen(
-              currentFilters: _Selectedfilters,
-            ),
+            builder: (ctx) => FiltersScreen(),
           ),
         );
-
-        setState(() {
-          _Selectedfilters = result ?? kInitialFilters;
-        });
       }
     }
 
